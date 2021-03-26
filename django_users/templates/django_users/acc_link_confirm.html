@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'django_users/base.html' %}
 {% block content%}
     {% if link_is_valid %}
         <h1>Your account has been activated! Please login <a href="{% url 'accounts:login' %}">HERE!</a> </h1>

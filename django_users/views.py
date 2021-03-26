@@ -3,7 +3,7 @@ from django.views.generic import CreateView, TemplateView
 from django.urls import reverse_lazy
 from .models import CustomUser
 from . import forms
-
+from django.contrib.auth.views import PasswordResetView as DjangoPasswordResetView
 ######
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -46,18 +46,30 @@ class GoodByeView(TemplateView):
     template_name = 'bye.html'
 
 
-def activate(request, uidb64, token):
-    try:
-        uid = force_text(urlsafe_base64_decode(uidb64))
-        user = CustomUser.objects.get(pk=uid)
-    except(TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
-        user = None
-    if user is not None and account_activation_token.check_token(user, token):
-        user.is_active = True
-        user.save()
-        # return redirect('home')
-        link_is_valid = True
-    else:
-        link_is_valid = False
+class ActivateAccountView(TemplateView):
+    template_name = 'django_users/acc_link_confirm.html'
 
-    return render(request, 'django_users/acc_link_confirm.html', {'link_is_valid': link_is_valid})
+    def get(self, request, *args, **kwargs):
+        uidb64 = kwargs['uidb64']
+        token = kwargs['token']
+
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = CustomUser.objects.get(pk=uid)
+        except(TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+            user = None
+        if user is not None and account_activation_token.check_token(user, token):
+            user.is_active = True
+            user.save()
+            # return redirect('home')
+            link_is_valid = True
+        else:
+            link_is_valid = False
+        kwargs['link_is_valid'] = link_is_valid
+        return super(ActivateAccountView, self).get(request, *args, **kwargs)
+
+
+class PasswordResetView(DjangoPasswordResetView):
+    template_name = 'django_users/registration/password_reset.html'
+    email_template_name = 'django_users/registration/password_reset_email.html'
+    success_url = reverse_lazy('django_users:password_reset_done')
