@@ -3,10 +3,10 @@ from .models import CustomUser
 
 
 class CustomUserCreationForm(UserCreationForm):
-
     class Meta(UserCreationForm):
         model = CustomUser
         fields = ('email',)
+
 
 
 class CustomUserChangeForm(UserChangeForm):
@@ -15,3 +15,8 @@ class CustomUserChangeForm(UserChangeForm):
         model = CustomUser
         fields = ('email',)
 
+
+class SignupForm(CustomUserCreationForm):
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'password1', 'password2')

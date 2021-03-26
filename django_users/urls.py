@@ -1,6 +1,6 @@
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
-from .views import SignUpView, GoodByeView
+from .views import SignUpView, GoodByeView , activate
 app_name = 'django_users'
 
 urlpatterns = [
@@ -8,4 +8,5 @@ urlpatterns = [
     path('register/', SignUpView.as_view(), name='register'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('bye/', GoodByeView.as_view(), name='bye'),
+    path('activate/<uidb64>/<token>/', activate, name='activate')
 ]
