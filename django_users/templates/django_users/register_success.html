@@ -1,0 +1,9 @@
+{% extends 'django_users/base.html' %}
+{% block title %}
+    Registration Successful
+{% endblock %}
+
+{% block content %}
+    <h1>Registration was successful!</h1>
+    <p>Didn't receive any email? Check the spam folder and, if you didn't find anything <a href="{% url 'django_users:resend_activation_email' %}">Send another email</a></p>
+{% endblock %}
