@@ -1,24 +1,19 @@
-from django.shortcuts import render
 from django.views.generic import CreateView, TemplateView
 from django.urls import reverse_lazy
-from .models import CustomUser
+from .models import CustomUser, ActivationEmailOptions
 from . import forms
 from django.contrib.auth.views import PasswordResetView as DjangoPasswordResetView
 from django.contrib.auth.views import PasswordResetDoneView as DjangoPasswordResetDoneView
 from django.contrib.auth.views import PasswordResetConfirmView as DjangoPasswordResetConfirmView
 from django.contrib.auth.views import PasswordResetCompleteView as DjangoPasswordResetCompleteView
 ######
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
-from .forms import SignupForm
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
-from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
 from .tokens import account_activation_token
+from django.utils import timezone
 
 
 class SignUpView(CreateView):
@@ -30,6 +25,7 @@ class SignUpView(CreateView):
 
         self.object = form.save(commit=False)
         self.object.is_active = False
+        self.object.activation_mail_date = timezone.now()
         self.object.save()
 
         current_site = get_current_site(self.request)
@@ -55,16 +51,17 @@ class ActivateAccountView(TemplateView):
     def get(self, request, *args, **kwargs):
         uidb64 = kwargs['uidb64']
         token = kwargs['token']
-
+        email_settings= ActivationEmailOptions()
         try:
             uid = force_text(urlsafe_base64_decode(uidb64))
             user = CustomUser.objects.get(pk=uid)
         except(TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
             user = None
-        if user is not None and account_activation_token.check_token(user, token):
+        if user is not None \
+                and account_activation_token.check_token(user, token) \
+                and user.activation_mail_date + email_settings.expiration_time > timezone.now():
             user.is_active = True
             user.save()
-            # return redirect('home')
             link_is_valid = True
         else:
             link_is_valid = False
