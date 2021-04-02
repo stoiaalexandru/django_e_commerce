@@ -26,7 +26,7 @@ SECRET_KEY = 'ltfar(==c+spc(#v8ugzvi$d*+l&$)jr2(&n8t*amvd2+oslvk'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['45.13.138.34', '127.0.0.1']
 
 
 # Application definition
