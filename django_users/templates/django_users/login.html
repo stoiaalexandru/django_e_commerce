@@ -8,18 +8,15 @@
             <input type="submit" class="btn btn-default" value="Login">
         </form>
 
-    <div class="container">
-        <h3>You don't have an account? </h3>
-        <a class="btn btn-success" href="{% url 'accounts:register' %}">Register Now</a>
-    </div>
+
         <div class="container">
-        <h3>Forgot your password? </h3>
-        <a class="btn btn-danger" href="{% url 'accounts:password_reset' %}">Password Recovery</a>
-    </div>
-    </div>
-        <div class="container">
-        <h3>You need to activate your account? </h3>
-        <a class="btn btn-danger" href="{% url 'accounts:resend_activation_email' %}">Resend Activation Email</a>
-    </div>
+            <h3>You don't have an account? </h3>
+            <a class="btn btn-success" href="{% url 'accounts:register' %}">Register Now</a>
+            <h3>Forgot your password? </h3>
+            <a class="btn btn-danger" href="{% url 'accounts:password_reset' %}">Password Recovery</a>
+            <h3>You need to activate your account? </h3>
+            <a class="btn btn-danger" href="{% url 'accounts:resend_activation_email' %}">Resend Activation Email</a>
+        </div>
+
     </div>
 {% endblock %}
