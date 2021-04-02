@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_users',
     'bootstrap3',
     'dbsettings',
+    'django_celery_results',
 
 ]
 
