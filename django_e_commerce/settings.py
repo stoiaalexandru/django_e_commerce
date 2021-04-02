@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_users',
     'bootstrap3',
     'dbsettings',
+
 ]
 
 MIDDLEWARE = [
@@ -80,10 +81,21 @@ WSGI_APPLICATION = 'django_e_commerce.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME':  str(os.path.join(BASE_DIR, "db.sqlite3")),
-    }
+   'default': {
+
+        'ENGINE': 'django.db.backends.postgresql',
+
+        'NAME': 'django_e_commerce_db',
+
+        'USER': 'andu',
+
+        'PASSWORD': 'test1234',
+
+        'HOST': '45.13.138.34',
+
+        'PORT': '5432',
+
+}
 }
 
 
@@ -135,3 +147,9 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'testingexamplemail123@gmail.com'
 EMAIL_HOST_PASSWORD = 'TestingMotherfucker01'
 EMAIL_PORT = 587
+
+CELERY_BROKER_URL = 'redis://:foobared@45.13.138.34:6379/'
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'django-db'

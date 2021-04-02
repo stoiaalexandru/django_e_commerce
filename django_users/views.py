@@ -15,7 +15,7 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from .tokens import account_activation_token
 from django.utils import timezone
-from .functions import send_email
+from .tasks import send_email
 
 
 class SignUpView(CreateView):
@@ -40,7 +40,7 @@ class SignUpView(CreateView):
         # to_email = form.cleaned_data.get('email')
         # email = EmailMessage( mail_subject, message, to=[to_email])
         # email.send()
-        send_email(template='django_users/account_activate_email.html',
+        send_email.delay(template='django_users/account_activate_email.html',
                    domain=current_site.domain,
                    user=self.object,
                    to_email=form.cleaned_data.get('email'))
@@ -90,7 +90,7 @@ class ResendActivationEmailView(FormView):
         user = form.cleaned_data['user']
 
         current_site = get_current_site(self.request)
-        send_email(template='django_users/account_activate_email.html',
+        send_email.delay(template='django_users/account_activate_email.html',
                    domain=current_site.domain,
                    user=user,
                    to_email=form.cleaned_data.get('email'))
