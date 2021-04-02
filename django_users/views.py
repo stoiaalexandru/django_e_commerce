@@ -15,7 +15,7 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from .tokens import account_activation_token
 from django.utils import timezone
-from .tasks import send_email
+from .tasks import send_activation_email
 
 
 class SignUpView(CreateView):
@@ -24,7 +24,6 @@ class SignUpView(CreateView):
     template_name = 'django_users/register.html'
 
     def form_valid(self, form):
-
         self.object = form.save(commit=False)
         self.object.is_active = False
         self.object.activation_mail_date = timezone.now()
@@ -40,10 +39,9 @@ class SignUpView(CreateView):
         # to_email = form.cleaned_data.get('email')
         # email = EmailMessage( mail_subject, message, to=[to_email])
         # email.send()
-        send_email.delay(template='django_users/account_activate_email.html',
-                   domain=current_site.domain,
-                   user=self.object,
-                   to_email=form.cleaned_data.get('email'))
+        send_activation_email.delay(template='django_users/account_activate_email.html',
+                                    domain=current_site.domain,
+                                    user_pk=self.object.pk)
 
         return super(SignUpView, self).form_valid(form)
 
@@ -86,14 +84,12 @@ class ResendActivationEmailView(FormView):
     success_url = reverse_lazy('django_users:resend_activation_email_success')
 
     def form_valid(self, form):
-
         user = form.cleaned_data['user']
 
         current_site = get_current_site(self.request)
-        send_email.delay(template='django_users/account_activate_email.html',
-                   domain=current_site.domain,
-                   user=user,
-                   to_email=form.cleaned_data.get('email'))
+        send_activation_email.delay(template='django_users/account_activate_email.html',
+                                    domain=current_site.domain,
+                                    user_pk=user.pk)
         user.activation_mail_date = timezone.now()
         user.save()
 
@@ -121,4 +117,3 @@ class PasswordResetConfirmView(DjangoPasswordResetConfirmView):
 
 class PasswordResetCompleteView(DjangoPasswordResetCompleteView):
     template_name = 'django_users/registration/password_reset_complete.html'
-
