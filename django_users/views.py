@@ -76,13 +76,13 @@ class ResendActivationEmailView(FormView):
 
     def form_valid(self, form):
         user = form.cleaned_data['user']
-        if not user.is_active:
-            current_site = get_current_site(self.request)
-            send_activation_email.delay(template='django_users/account_activate_email.html',
+
+        current_site = get_current_site(self.request)
+        send_activation_email.delay(template='django_users/account_activate_email.html',
                                         domain=current_site.domain,
                                         user_pk=user.pk)
-            user.activation_mail_date = timezone.now()
-            user.save()
+        user.activation_mail_date = timezone.now()
+        user.save()
 
         return super(ResendActivationEmailView, self).form_valid(form)
 
