@@ -39,6 +39,9 @@ class ResendActivationEmailForm(forms.Form):
             raise forms.ValidationError(
                 'You have to wait {} until requesting another mail.'.format((user.activation_mail_date +
                                                                             email_settings.resend_delay-timezone.now())))
+        if user.is_active:
+            raise forms.ValidationError('This user is already active, please LOGIN instead!')
+
         self.cleaned_data['user'] = user
         return email
 

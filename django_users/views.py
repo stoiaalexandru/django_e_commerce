@@ -30,15 +30,6 @@ class SignUpView(CreateView):
         self.object.save()
 
         current_site = get_current_site(self.request)
-        # mail_subject = 'Activate your account!'
-        # message = render_to_string('django_users/account_activate_email.html', {
-        #     'domain': current_site.domain,
-        #     'uid': urlsafe_base64_encode(force_bytes(self.object.pk)),
-        #     'token': account_activation_token.make_token(self.object)
-        #                            })
-        # to_email = form.cleaned_data.get('email')
-        # email = EmailMessage( mail_subject, message, to=[to_email])
-        # email.send()
         send_activation_email.delay(template='django_users/account_activate_email.html',
                                     domain=current_site.domain,
                                     user_pk=self.object.pk)
@@ -85,13 +76,13 @@ class ResendActivationEmailView(FormView):
 
     def form_valid(self, form):
         user = form.cleaned_data['user']
-
-        current_site = get_current_site(self.request)
-        send_activation_email.delay(template='django_users/account_activate_email.html',
-                                    domain=current_site.domain,
-                                    user_pk=user.pk)
-        user.activation_mail_date = timezone.now()
-        user.save()
+        if not user.is_active:
+            current_site = get_current_site(self.request)
+            send_activation_email.delay(template='django_users/account_activate_email.html',
+                                        domain=current_site.domain,
+                                        user_pk=user.pk)
+            user.activation_mail_date = timezone.now()
+            user.save()
 
         return super(ResendActivationEmailView, self).form_valid(form)
 
