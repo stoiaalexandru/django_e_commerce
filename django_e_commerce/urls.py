@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from django.contrib.auth.decorators import login_required
 
 admin.autodiscover()
 
@@ -23,5 +24,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('settings/', include('dbsettings.urls')),
     path('', views.HomePageView.as_view(), name='index'),
-    path('accounts/', include('django_users.urls', namespace='accounts'))
+    path('accounts/', include('django_users.urls', namespace='accounts')),
+    path('shop/', include('django_shop.urls', namespace='shop'))
 ]

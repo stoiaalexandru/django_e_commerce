@@ -62,6 +62,9 @@ class LineItem(models.Model):
     quantity = models.IntegerField()
     price = models.FloatField()
 
+    def get_total_cost(self):
+        return self.quantity*self.price
+
 
 class Payment(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)

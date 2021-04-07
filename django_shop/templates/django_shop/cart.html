@@ -1,0 +1,41 @@
+{% extends 'django_shop/base.html' %}
+{% block title %}
+    My Cart
+{% endblock %}
+
+{% block content %}
+    <h1> Welcome {{ customer.get_full_name }}</h1>
+    <h2> This is your current shopping cart:</h2>
+    {% if product_lineitem_list %}
+        <table class="table">
+
+            <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Price/Item</th>
+                <th scope="col">Total Price</th>
+            </tr>
+
+            {% for product in product_lineitem_list %}
+
+                <tr>
+                    <td>{{ product.product.name }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.price }}</td>
+                    <td>{{ product.get_total_cost }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td>Total:</td>
+                <td></td>
+                <td></td>
+                <td><b>{{ total_price }}</b></td>
+            </tr>
+
+        </table>
+        <a class="btn btn-success" href="#">Checkout</a>
+    {% else %}
+        <p>No products added to cart yet, you can browse <a href="{% url 'django_shop:product_list' %}">our product
+            list</a>!</p>
+    {% endif %}
+{% endblock %}

@@ -26,6 +26,14 @@
     <div class="navbar-header">
         <a class="navbar-brand" href="{% url 'index' %}">HOME</a>
     </div>
+    <ul class="nav navbar-nav navbar-left">
+        {% if user.is_authenticated %}
+            <li><a class="nav-btn" href="{% url 'django_shop:cart' %}">Cart</a></li>
+            <li><a class="nav-btn" href="{% url 'django_shop:product_list' %}">Products</a></li>
+
+        {% endif %}
+
+    </ul>
     <ul class="nav navbar-nav navbar-right">
         {% if user.is_authenticated %}
             <li><a class="nav-btn" href="{% url 'accounts:logout' %}">Logout</a></li>
@@ -33,6 +41,7 @@
         {% else %}
             <li><a class="nav-btn" href="{% url 'accounts:login' %}">Login</a></li>
             <li><a class="nav-btn" href="{% url 'accounts:register' %}">Register</a></li>
+
         {% endif %}
 
     </ul>
