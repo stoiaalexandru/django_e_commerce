@@ -19,6 +19,9 @@ class CustomUserChangeForm(UserChangeForm):
 
 
 class SignupForm(CustomUserCreationForm):
+    first_name = forms.CharField()
+    last_name = forms.CharField()
+
     class Meta:
         model = CustomUser
         fields = ('email', 'password1', 'password2')

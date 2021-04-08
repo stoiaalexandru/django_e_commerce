@@ -8,7 +8,7 @@
     <h1> {{ product.name }}</h1>
     <ul>
     <li>Supplier: {{ product.supplier }}</li>
-    <li>Stock: {{ stock }}</li>
+    <li>Stock: {{ product.keys.all|length }}</li>
     <a class="btn btn-success" href="#"> Add to cart</a>
     </ul>
 {% endblock %}

@@ -16,6 +16,7 @@ from django.core.mail import EmailMessage
 from .tokens import account_activation_token
 from django.utils import timezone
 from .tasks import send_activation_email
+from django_shop.models import Customer
 
 
 class SignUpView(CreateView):
@@ -28,6 +29,13 @@ class SignUpView(CreateView):
         self.object.is_active = False
         self.object.activation_mail_date = timezone.now()
         self.object.save()
+
+        Customer.objects.create(
+            first_name=form.cleaned_data['first_name'],
+            last_name=form.cleaned_data['last_name'],
+            user=self.object)
+
+
 
         current_site = get_current_site(self.request)
         send_activation_email.delay(template='django_users/account_activate_email.html',

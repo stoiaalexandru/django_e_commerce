@@ -17,9 +17,9 @@ class Customer(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="customer")
     first_name = models.CharField(max_length=100, null=False, blank=False)
     last_name = models.CharField(max_length=100, null=False, blank=False)
-    address = models.CharField(max_length=512, null=False, blank=False)
-    phone = models.CharField(max_length=15, null=False, blank=False)
-    billing_address = models.CharField(max_length=256)
+    address = models.CharField(max_length=512, null=True, blank=True)
+    phone = models.CharField(max_length=15, null=True, blank=True)
+    billing_address = models.CharField(max_length=256, null=True, blank=True)
 
     def get_full_name(self):
         return self.first_name + " " + self.last_name
@@ -42,6 +42,12 @@ class ShoppingCart(models.Model):
 
     def __str__(self):
         return self.customer.get_full_name() + "'s Shopping Cart"
+
+    def get_total_cost(self):
+        total = 0
+        for product in self.items.all():
+            total += product.price * product.quantity
+        return total
 
 
 class Order(models.Model):
