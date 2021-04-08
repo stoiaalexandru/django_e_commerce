@@ -24,6 +24,9 @@ class Customer(models.Model):
     def get_full_name(self):
         return self.first_name + " " + self.last_name
 
+    def cart_exists(self):
+        return hasattr(self, 'shopping_cart')
+
     def __str__(self):
         return self.get_full_name()
 

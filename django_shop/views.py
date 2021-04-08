@@ -5,7 +5,7 @@ from .models import (Customer, Product, ProductDetail, Order, ShoppingCart,
                      LineItem, Payment, Key, OrderHistoryItem)
 # Create your views here.
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.utils import timezone
 
 class ProductListView(LoginRequiredMixin, ListView):
     model = Product
@@ -22,11 +22,16 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
 class CartView(LoginRequiredMixin, TemplateView):
     template_name = 'django_shop/cart.html'
 
+
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         customer = user.customer
         context['customer'] = customer
+
+        if not customer.cart_exists():
+            ShoppingCart.objects.create(created=timezone.now(),customer=customer)
 
         product_queryset = customer.shopping_cart.items.all()
         shopping_cart = user.customer.shopping_cart
