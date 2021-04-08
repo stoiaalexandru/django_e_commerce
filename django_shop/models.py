@@ -14,7 +14,7 @@ class OrderStatus(models.TextChoices):
 
 
 class Customer(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="customer")
     first_name = models.CharField(max_length=100, null=False, blank=False)
     last_name = models.CharField(max_length=100, null=False, blank=False)
     address = models.CharField(max_length=512, null=False, blank=False)
@@ -37,7 +37,7 @@ class Product(models.Model):
 
 
 class ShoppingCart(models.Model):
-    customer = models.OneToOneField(Customer, on_delete=models.CASCADE)
+    customer = models.OneToOneField(Customer, on_delete=models.CASCADE, related_name='shopping_cart')
     created = models.DateField()
 
     def __str__(self):
@@ -84,7 +84,7 @@ class Key(models.Model):
 
 
 class ProductDetail(models.Model):
-    product = models.OneToOneField(Product, on_delete=models.CASCADE)
+    product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name="product_detail")
     price = models.FloatField(default=0, validators=([MinValueValidator(0)]))
     quantity = models.IntegerField(
         default=0,
