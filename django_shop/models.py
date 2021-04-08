@@ -15,10 +15,10 @@ class OrderStatus(models.TextChoices):
 
 class Customer(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    address = models.CharField(max_length=512)
-    phone = models.CharField(max_length=15)
+    first_name = models.CharField(max_length=100, null=False, blank=False)
+    last_name = models.CharField(max_length=100, null=False, blank=False)
+    address = models.CharField(max_length=512, null=False, blank=False)
+    phone = models.CharField(max_length=15, null=False, blank=False)
     billing_address = models.CharField(max_length=256)
 
     def get_full_name(self):
@@ -29,7 +29,7 @@ class Customer(models.Model):
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256, null=False, blank=False)
     supplier = models.CharField(max_length=256)
 
     def __str__(self):
@@ -45,7 +45,7 @@ class ShoppingCart(models.Model):
 
 
 class Order(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, related_name="orders", on_delete=models.CASCADE)
     ordered = models.DateField()
     shipped = models.DateField(blank=True, null=True)
     ship_to = models.CharField(max_length=500)
@@ -56,26 +56,26 @@ class Order(models.Model):
 
 
 class LineItem(models.Model):
-    cart = models.ForeignKey(ShoppingCart, on_delete=models.RESTRICT, blank=True, null=True)
-    order = models.ForeignKey(Order, on_delete=models.RESTRICT, blank=True, null=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
-    price = models.FloatField()
+    cart = models.ForeignKey(ShoppingCart, on_delete=models.RESTRICT, blank=True, null=True, related_name="items")
+    order = models.ForeignKey(Order, on_delete=models.RESTRICT, blank=True, null=True,related_name="items")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='items')
+    quantity = models.IntegerField(null=False, blank=False)
+    price = models.FloatField(null=False, blank=False)
 
     def get_total_cost(self):
         return self.quantity*self.price
 
 
 class Payment(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='payments')
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='payments')
     paid = models.DateField()
-    total = models.FloatField()
+    total = models.FloatField(null=False, blank=False)
     details = models.CharField(max_length=500)
 
 
 class Key(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='keys')
     key = models.CharField(max_length=64)
     is_used = models.BooleanField(default=False)
 
@@ -95,7 +95,7 @@ class ProductDetail(models.Model):
 
 
 class OrderHistoryItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='history_list')
     product_name = models.CharField(max_length=256)
     price = models.FloatField(default=0, validators=([MinValueValidator(0)]))
     quantity = models.IntegerField(default=0, validators=([MinValueValidator(0)]))
