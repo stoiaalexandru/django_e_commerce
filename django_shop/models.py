@@ -1,6 +1,7 @@
 from django.db import models
 from django_users.models import CustomUser
 from django.core.validators import MinValueValidator
+from django.utils import timezone
 from django.db.migrations.operations import RunSQL
 # Create your models here.
 
@@ -27,6 +28,14 @@ class Customer(models.Model):
     def cart_exists(self):
         return hasattr(self, 'shopping_cart')
 
+    def get_or_create_cart(self):
+
+        if not self.cart_exists():
+            cart = ShoppingCart.objects.create(created=timezone.now(), customer=self)
+        else:
+            cart = self.shopping_cart
+        return cart
+
     def __str__(self):
         return self.get_full_name()
 
@@ -37,6 +46,15 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_stock(self):
+        return self.keys.count()
+
+    def exists_in_cart(self, cart):
+        item = cart.items.filter(product_id__exact=self.pk)
+        return item
+
+
 
 
 class ShoppingCart(models.Model):
@@ -51,6 +69,7 @@ class ShoppingCart(models.Model):
         for product in self.items.all():
             total += product.price * product.quantity
         return total
+
 
 
 class Order(models.Model):
@@ -68,8 +87,8 @@ class LineItem(models.Model):
     cart = models.ForeignKey(ShoppingCart, on_delete=models.RESTRICT, blank=True, null=True, related_name="items")
     order = models.ForeignKey(Order, on_delete=models.RESTRICT, blank=True, null=True,related_name="items")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='items')
-    quantity = models.IntegerField(null=False, blank=False)
-    price = models.FloatField(null=False, blank=False)
+    quantity = models.IntegerField(null=False, blank=False, default=1)
+    price = models.FloatField(null=False, blank=False,default=1)
 
     def get_total_cost(self):
         return self.quantity*self.price
@@ -95,9 +114,6 @@ class Key(models.Model):
 class ProductDetail(models.Model):
     product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name="product_detail")
     price = models.FloatField(default=0, validators=([MinValueValidator(0)]))
-    quantity = models.IntegerField(
-        default=0,
-        validators=([MinValueValidator(0)]))
 
     def __str__(self):
         return self.product.name + " details"

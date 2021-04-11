@@ -1,0 +1,14 @@
+{% extends 'django_shop/base.html' %}
+{% block title %}
+    Added to cart
+{% endblock %}
+{% block content %}
+
+        <h1> Product added to cart!</h1>
+        <h2> You can
+            <a href="{% url "django_shop:product_list" %}">CONTINUE SHOPPING</a>
+            or
+            <a href="{% url "django_shop:cart" %}">GO TO CART</a> !
+        </h2>
+
+{% endblock %}

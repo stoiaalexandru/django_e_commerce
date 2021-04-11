@@ -6,7 +6,12 @@
 {% block content %}
     <ul>
     {% for product in product_list %}
-    <li><a href="{% url 'django_shop:product_detail' pk=product.pk  %}">{{ product.name }}</a></li>
+    <li>
+    <div>
+        <a href="{% url 'django_shop:product_detail' pk=product.pk  %}">{{ product.name }}</a>
+        <a class="btn btn-success" href="{% url 'django_shop:add' pk=product.pk %}">Add to Cart</a>
+    </div>
+    </li>
     {% empty %}
     <li>No products available.</li>
     {% endfor %}
