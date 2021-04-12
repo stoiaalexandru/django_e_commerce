@@ -1,5 +1,10 @@
 from django.core.exceptions import ImproperlyConfigured
+from django.db.models import F
 from django.shortcuts import redirect
+from django.utils import timezone
+from django.views.generic import FormView
+from django.shortcuts import get_object_or_404
+from django_shop.models import ShoppingCart, LineItem, Product
 
 
 class RedirectMixin:
@@ -42,3 +47,4 @@ class RedirectMixin:
 class CustomerRedirectMixin(RedirectMixin):
     def test_func(self):
         return hasattr(self.request.user, 'customer')
+

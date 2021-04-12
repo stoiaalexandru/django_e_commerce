@@ -21,23 +21,12 @@ class ProductQuantityForm(LoginRequiredMixin, SingleObjectMixin, CustomerRedirec
     model = Product
     form_class = QuantityForm
 
-    def form_valid(self, form):
-        user = self.request.user
-        product = self.get_object()
-        quantity = form.cleaned_data['quantity']
 
-        if not user.customer.cart_exists():
-            ShoppingCart.objects.create(customer=user.customer)
+class ProductListViewForm(LoginRequiredMixin, SingleObjectMixin, CustomerRedirectMixin, FormView):
+    template_name = 'django_shop/product_list.html'
+    login_url = reverse_lazy('django_users:login')
+    success_url = reverse_lazy('django_shop:add_success')
+    model = Product
+    form_class = QuantityForm
 
-        cart = user.customer.shopping_cart
-        item = cart.items.filter(product_id__exact=product.pk)
-
-        if cart.items.count() == 0:
-            cart.created = timezone.now()
-        if not item:
-            LineItem.objects.create(price=product.product_detail.price, product=product, cart=cart, quantity=quantity)
-        else:
-            item.update(quantity=F('quantity') + quantity)
-
-        return super(ProductQuantityForm, self).form_valid(form)
 

@@ -10,7 +10,7 @@
     <li>Supplier: {{ product.supplier }}</li>
     <li>Stock: {{ product.keys.all|length }}</li>
     </ul>
-    <form method="post">
+    <form method="post" action="{% url 'django_shop:add_to_cart' pk=product.pk %}">
         {% csrf_token %}
         {% bootstrap_form form %}
         <input type="submit" class="btn btn-success" value="Add to cart">
