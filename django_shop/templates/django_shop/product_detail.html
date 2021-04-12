@@ -9,6 +9,10 @@
     <ul>
     <li>Supplier: {{ product.supplier }}</li>
     <li>Stock: {{ product.keys.all|length }}</li>
-    <a class="btn btn-success" href="#"> Add to cart</a>
     </ul>
+    <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <input type="submit" class="btn btn-success" value="Add to cart">
+    </form>
 {% endblock %}

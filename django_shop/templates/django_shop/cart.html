@@ -6,7 +6,7 @@
 {% block content %}
     <h1> Welcome {{ customer.get_full_name }}</h1>
     <h2> This is your current shopping cart:</h2>
-    {% if product_lineitem_list %}
+    {% if customer.shopping_cart.items.all %}
         <table class="table">
 
             <tr>
@@ -16,7 +16,7 @@
                 <th scope="col">Total Price</th>
             </tr>
 
-            {% for product in product_lineitem_list %}
+            {% for product in customer.shopping_cart.items.all %}
 
                 <tr>
                     <td>{{ product.product.name }}</td>

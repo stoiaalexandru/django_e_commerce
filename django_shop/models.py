@@ -28,7 +28,6 @@ class Customer(models.Model):
     def cart_exists(self):
         return hasattr(self, 'shopping_cart')
 
-
     def get_or_create_cart(self):
 
         if not self.cart_exists():

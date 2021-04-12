@@ -9,7 +9,7 @@
     <li>
     <div>
         <a href="{% url 'django_shop:product_detail' pk=product.pk  %}">{{ product.name }}</a>
-        <a class="btn btn-success" href="{% url 'django_shop:add' pk=product.pk %}">Add to Cart</a>
+        <a class="btn btn-success" href="#">Add to Cart</a>
     </div>
     </li>
     {% empty %}
