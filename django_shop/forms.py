@@ -7,3 +7,5 @@ class CustomerCreationForm(forms.Form):
     last_name = forms.CharField()
     address = forms.CharField()
     phone = forms.CharField()
+    billing_address= forms.CharField()
+

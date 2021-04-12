@@ -28,6 +28,7 @@ class Customer(models.Model):
     def cart_exists(self):
         return hasattr(self, 'shopping_cart')
 
+
     def get_or_create_cart(self):
 
         if not self.cart_exists():
@@ -50,12 +51,6 @@ class Product(models.Model):
     def get_stock(self):
         return self.keys.count()
 
-    def exists_in_cart(self, cart):
-        item = cart.items.filter(product_id__exact=self.pk)
-        return item
-
-
-
 
 class ShoppingCart(models.Model):
     customer = models.OneToOneField(Customer, on_delete=models.CASCADE, related_name='shopping_cart')
@@ -69,7 +64,6 @@ class ShoppingCart(models.Model):
         for product in self.items.all():
             total += product.price * product.quantity
         return total
-
 
 
 class Order(models.Model):
