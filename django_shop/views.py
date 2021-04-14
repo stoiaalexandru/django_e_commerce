@@ -69,7 +69,7 @@ class CartView(LoginRequiredMixin, CustomerRedirectMixin, TemplateView):
         return context
 
 
-class CustomerCreateView(CreateView):
+class CustomerCreateView(LoginRequiredMixin, CreateView):
     model = Customer
     success_url = reverse_lazy('index')
     fields = ('first_name', 'last_name', 'address', 'phone', 'billing_address')
@@ -81,7 +81,7 @@ class CustomerCreateView(CreateView):
         return super(CustomerCreateView, self).form_valid(form)
 
 
-class AddToCartView(View):
+class AddToCartView(LoginRequiredMixin, CustomerRedirectMixin, View):
     success_url = reverse_lazy('django_shop:add_success')
     form_class = QuantityForm
 
