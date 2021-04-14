@@ -19,9 +19,9 @@ def send_order_email(template, user_pk, order_pk, customer_pk):
         })
 
         email = EmailMultiAlternatives(mail_subject, message, "no-reply@e-commerce.ro", to=[user.email])
-        message.attach_alternative(message, "text/html")
+        email.attach_alternative(message, "text/html")
         email.send()
-        
+
     except Exception as err:
         print(err)
     return None
