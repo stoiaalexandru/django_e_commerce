@@ -1,5 +1,5 @@
 from celery import shared_task
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 from django_shop.models import Customer, Order
@@ -18,8 +18,10 @@ def send_order_email(template, user_pk, order_pk, customer_pk):
             'order': order
         })
 
-        email = EmailMessage(mail_subject, message, to=[user.email])
+        email = EmailMultiAlternatives(mail_subject, message, "no-reply@e-commerce.ro", to=[user.email])
+        message.attach_alternative(message, "text/html")
         email.send()
+        
     except Exception as err:
         print(err)
     return None
