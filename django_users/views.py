@@ -15,7 +15,7 @@ from .tokens import account_activation_token
 from django.utils import timezone
 from .tasks import send_activation_email
 from django_shop.models import Customer, ShoppingCart
-
+from django.core import serializers
 
 class SignUpView(CreateView):
     form_class = forms.SignupForm

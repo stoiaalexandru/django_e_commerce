@@ -14,7 +14,7 @@ from .mixins import CustomerRequiredMixin
 from .forms import QuantityForm, ProductQuantityForm, ProductListViewForm
 from django.http import Http404
 from .tasks import send_order_email
-
+from django.core import serializers
 
 
 class ProductList(LoginRequiredMixin, ListView):
@@ -140,8 +140,9 @@ class CheckoutEndpoint(LoginRequiredMixin,CustomerRequiredMixin, View):
         items.update(order=order, cart=None)
 
         send_order_email.delay(template='django_shop/checkout_email.html',
-                               user=self.request.user,
-                               order=order)
+                               user_pk=self.request.user.pk,
+                               order_pk=order.pk,
+                               customer_pk=customer.pk)
 
         return HttpResponseRedirect(self.success_url)
 

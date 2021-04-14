@@ -5,3 +5,4 @@ django-celery-results
 psycopg2-binary
 django-bootstrap3
 django-dbsettings
+djangorestframework
