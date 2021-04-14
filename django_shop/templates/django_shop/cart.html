@@ -26,14 +26,19 @@
                 </tr>
             {% endfor %}
             <tr>
-                <td>Total:</td>
+                <td><b>Total:</b></td>
                 <td></td>
                 <td></td>
                 <td><b>{{ customer.shopping_cart.get_total_cost }}</b></td>
             </tr>
         </table>
         <p>Date created: {{ customer.shopping_cart.created }}</p>
-        <a class="btn btn-success" href="#">Checkout</a>
+        <a class="btn btn-success" href="{% url 'django_shop:checkout' %}">Checkout</a>
+        <div class="jumbotron">
+        {% block checkout %}
+        {% endblock %}
+        </div>
+
     {% else %}
         <p>No products added to cart yet, you can browse <a href="{% url 'django_shop:product_list' %}">our product
             list</a>!</p>

@@ -1,0 +1,20 @@
+{% extends "django_shop/cart.html" %}
+{% block title %}
+
+    Checkout
+{% endblock %}
+{% block checkout %}
+    <h1>Checkout info</h1>
+    <ul>
+    <li>Full name: {{ customer.get_full_name }}</li>
+    <li>Address: {{ customer.address }}</li>
+    <li>Billing address: {{ customer.billing_address }}</li>
+    </ul>
+    <h3>If the info is not correct, go <a href="#">Update Your Profile Info</a> !</h3>
+    <form method="post" action="{% url 'django_shop:complete_checkout' %}">
+    {% csrf_token %}
+    <input type="submit" class="btn btn-success" value="ORDER">
+    </form>
+
+
+{% endblock %}

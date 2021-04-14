@@ -7,12 +7,14 @@ from django.views import View
 from django.views.generic.edit import FormMixin
 
 from .models import (Customer, Product, ProductDetail, Order, ShoppingCart,
-                     LineItem, Payment, Key, OrderHistoryItem)
+                     LineItem, Payment, Key, OrderHistoryItem, OrderStatus)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
-from .mixins import CustomerRedirectMixin
+from .mixins import CustomerRequiredMixin
 from .forms import QuantityForm, ProductQuantityForm, ProductListViewForm
 from django.http import Http404
+from .tasks import send_order_email
+
 
 
 class ProductList(LoginRequiredMixin, ListView):
@@ -34,14 +36,14 @@ class ProductDetails(DetailView):
         return context
 
 
-class ProductDetailView(LoginRequiredMixin, CustomerRedirectMixin, View):
+class ProductDetailView(LoginRequiredMixin, CustomerRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         view = ProductDetails.as_view()
         return view(request, *args, **kwargs)
 
 
-class ProductListView(LoginRequiredMixin, CustomerRedirectMixin, View):
+class ProductListView(LoginRequiredMixin, CustomerRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         view = ProductList.as_view()
@@ -52,7 +54,7 @@ class ProductListView(LoginRequiredMixin, CustomerRedirectMixin, View):
         return view(request, *args, **kwargs)
 
 
-class CartView(LoginRequiredMixin, CustomerRedirectMixin, TemplateView):
+class CartView(LoginRequiredMixin, CustomerRequiredMixin, TemplateView):
     template_name = 'django_shop/cart.html'
     login_url = reverse_lazy('django_users:login')
     redirect_url = reverse_lazy('django_shop:customer_create')
@@ -81,7 +83,7 @@ class CustomerCreateView(LoginRequiredMixin, CreateView):
         return super(CustomerCreateView, self).form_valid(form)
 
 
-class AddToCartView(LoginRequiredMixin, CustomerRedirectMixin, View):
+class AddToCartView(LoginRequiredMixin, CustomerRequiredMixin, View):
     success_url = reverse_lazy('django_shop:add_success')
     form_class = QuantityForm
 
@@ -110,6 +112,43 @@ class AddToCartView(LoginRequiredMixin, CustomerRedirectMixin, View):
 
     def get(self, request, *args, **kwargs):
         raise Http404
+
+
+class CheckoutView(LoginRequiredMixin, CustomerRequiredMixin, TemplateView):
+    template_name = 'django_shop/checkout.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CheckoutView, self).get_context_data()
+        context['customer'] = self.request.user.customer
+        return context
+
+
+class CheckoutEndpoint(LoginRequiredMixin,CustomerRequiredMixin, View):
+    success_url = reverse_lazy('django_shop:order_list')
+    
+    def post(self, request, *args, **kwargs):
+        customer = self.request.user.customer
+        items = customer.shopping_cart.items
+
+        order = Order.objects.create(customer=customer,
+                                     ordered=timezone.now(),
+                                     ship_to=customer.address,
+                                     status=OrderStatus.Pending)
+        if not items:
+            raise Http404
+
+        items.update(order=order, cart=None)
+
+        send_order_email.delay(template='django_shop/checkout_email.html',
+                               user=self.request.user,
+                               order=order)
+
+        return HttpResponseRedirect(self.success_url)
+
+
+class OrderListView(LoginRequiredMixin,CustomerRequiredMixin,ListView):
+    model = Order
+    template_name = 'django_shop/order_list.html'
 
 
 class AddToCartSuccess(TemplateView):

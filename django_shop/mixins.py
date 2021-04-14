@@ -44,7 +44,7 @@ class RedirectMixin:
         return super().dispatch(request, *args, **kwargs)
 
 
-class CustomerRedirectMixin(RedirectMixin):
+class CustomerRequiredMixin(RedirectMixin):
     def test_func(self):
         return hasattr(self.request.user, 'customer')
 
