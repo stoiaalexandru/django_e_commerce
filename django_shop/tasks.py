@@ -10,8 +10,8 @@ from django_users.models import CustomUser
 def send_order_email(template, user_pk, order_pk, customer_pk):
     try:
         user = CustomUser.objects.filter(pk=user_pk).get()
-        order = CustomUser.objects.filter(pk=order_pk).get()
-        customer = CustomUser.objects.filter(pk=customer_pk).get()
+        order = Order.objects.filter(pk=order_pk).get()
+        customer = Customer.objects.filter(pk=customer_pk).get()
         mail_subject = 'Order placed!'
         message = render_to_string(template, {
             'customer': customer,
