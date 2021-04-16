@@ -104,7 +104,7 @@ class Payment(models.Model):
 class Key(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='keys')
     key = models.CharField(max_length=64)
-    is_used = models.BooleanField(default=False)
+
 
     def __str__(self):
         return self.product.name + " key"
@@ -119,11 +119,12 @@ class ProductDetail(models.Model):
 
 
 class OrderHistoryItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='history_list')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='history_items')
     product_name = models.CharField(max_length=256)
     price = models.FloatField(default=0, validators=([MinValueValidator(0)]))
     quantity = models.IntegerField(default=0, validators=([MinValueValidator(0)]))
 
 
 class OrderHistoryKey(models.Model):
+    order_item = models.ForeignKey(OrderHistoryItem, on_delete=models.CASCADE,related_name='keys')
     key = models.CharField(max_length=64)

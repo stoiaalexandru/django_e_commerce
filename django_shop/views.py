@@ -153,7 +153,7 @@ class CheckoutEndpoint(LoginRequiredMixin,CustomerRequiredMixin, View):
             raise Http404
 
         items.update(order=order, cart=None)
-        for item in items.all():
+        for item in order.items.all():
             OrderHistoryItem.objects.create(order=order,
                                             product_name=item.product.name,
                                             price=item.product.product_detail.price,
@@ -161,7 +161,7 @@ class CheckoutEndpoint(LoginRequiredMixin,CustomerRequiredMixin, View):
             keys = item.product.keys.all()[:item.quantity]
             for key in keys:
                 OrderHistoryKey.objects.create(key=key.key)
-                key.delete()
+               # key.delete()
 
         send_order_email.delay(template='django_shop/checkout_email.html',
                                user_pk=self.request.user.pk,
@@ -182,3 +182,9 @@ class AddToCartSuccess(TemplateView):
 
 class CheckoutError(LoginRequiredMixin, CustomerRequiredMixin, TemplateView):
     template_name = 'django_shop/checkout_error.html'
+
+
+class ReserveView(View):
+    def get(self, request, *args, **kwargs):
+        OrderHistoryKey.objects.all().delete()
+        return HttpResponse("Success")
