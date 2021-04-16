@@ -126,5 +126,5 @@ class OrderHistoryItem(models.Model):
 
 
 class OrderHistoryKey(models.Model):
-    order_item = models.ForeignKey(OrderHistoryItem, on_delete=models.CASCADE,related_name='keys')
+    order_item = models.ForeignKey(OrderHistoryItem, on_delete=models.CASCADE, related_name='keys')
     key = models.CharField(max_length=64)
