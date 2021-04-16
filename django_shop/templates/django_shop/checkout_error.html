@@ -1,0 +1,11 @@
+{% extends 'django_shop/base.html' %}
+{% block title %}
+        Oops!!
+{% endblock %}
+
+{% block content %}
+        <h1>Oops!! Checkout failed!</h1>
+    <h3>One of the items in your cart is out of stock!</h3>
+    <p><a href="{% url 'django_shop:cart' %}">Return to cart</a> and try again later!</p>
+
+{% endblock %}

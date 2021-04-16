@@ -11,6 +11,7 @@ urlpatterns = [
     path('customer/create', views.CustomerCreateView.as_view(), name='customer_create'),
     path('add/<pk>/', views.AddToCartView.as_view(), name='add_to_cart'),
     path('checkout/', views.CheckoutView.as_view(), name='checkout'),
+    path('checkout_error/', views.CheckoutError.as_view(), name='checkout_error'),
     path('complete_checkout/', views.CheckoutEndpoint.as_view(), name='complete_checkout'),
     path('orderlist/', views.OrderListView.as_view(), name='order_list'),
 

@@ -123,3 +123,7 @@ class OrderHistoryItem(models.Model):
     product_name = models.CharField(max_length=256)
     price = models.FloatField(default=0, validators=([MinValueValidator(0)]))
     quantity = models.IntegerField(default=0, validators=([MinValueValidator(0)]))
+
+
+class OrderHistoryKey(models.Model):
+    key = models.CharField(max_length=64)

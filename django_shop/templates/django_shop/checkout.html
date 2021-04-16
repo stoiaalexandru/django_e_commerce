@@ -13,6 +13,7 @@
     <h3>If the info is not correct, go <a href="#">Update Your Profile Info</a> !</h3>
     <form method="post" action="{% url 'django_shop:complete_checkout' %}">
     {% csrf_token %}
+
     <input type="submit" class="btn btn-success" value="ORDER">
     </form>
 

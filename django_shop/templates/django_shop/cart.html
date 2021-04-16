@@ -33,10 +33,14 @@
             </tr>
         </table>
         <p>Date created: {{ customer.shopping_cart.created }}</p>
-        <a class="btn btn-success" href="{% url 'django_shop:checkout' %}">Checkout</a>
+        {% if checkout_available %}
+            <a class="btn btn-success" href="{% url 'django_shop:checkout' available=checkout_available %}">Checkout</a>
+        {% else %}
+            <a class="btn btn-success disabled">Checkout</a>
+        {% endif %}
         <div class="jumbotron">
-        {% block checkout %}
-        {% endblock %}
+            {% block checkout %}
+            {% endblock %}
         </div>
 
     {% else %}
