@@ -47,5 +47,5 @@ def send_order_history_single_email(template, order_pk):
 
         email = EmailMultiAlternatives(mail_subject, message, "no-reply@e-commerce.ro", to=[order.customer.user.email])
         email.attach_alternative(message, "text/html")
-        email.attach(order_file.name, order_file.read(), 'text/csv')
+        email.attach(order_file.name,'text/csv')
         email.send()
