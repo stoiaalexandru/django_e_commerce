@@ -8,11 +8,12 @@ import csv
 
 
 @shared_task
-def send_order_email(template, user_pk, order_pk, customer_pk):
+def send_order_email(template, order_pk,):
     try:
-        user = CustomUser.objects.filter(pk=user_pk).get()
         order = Order.objects.filter(pk=order_pk).get()
-        customer = Customer.objects.filter(pk=customer_pk).get()
+        user = order.customer.user
+        customer = order.customer
+        
         mail_subject = 'Order placed!'
         message = render_to_string(template, {
             'customer': customer,
