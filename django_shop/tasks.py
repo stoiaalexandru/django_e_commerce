@@ -33,7 +33,7 @@ def send_order_history_single_email(template, order_pk):
     order = Order.objects.filter(pk=order_pk).get()
     items = order.history_items.all()
 
-    file_content = "Order ID,Order Date,Product,Key"
+    file_content = "Order ID,Order Date,Product,Key\n"
     for item in items:
         for key in item.keys.all():
             file_content += "{},{},{}\n".format(order.id, order.ordered, item.product_name, key.key)
