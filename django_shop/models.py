@@ -21,6 +21,7 @@ class Customer(models.Model):
     address = models.CharField(max_length=512, null=False, blank=False)
     phone = models.CharField(max_length=15, null=False, blank=False)
     billing_address = models.CharField(max_length=256, null=True, blank=True)
+    email_requested = models.DateTimeField(blank=True, null=True)
 
     def get_full_name(self):
         return self.first_name + " " + self.last_name
@@ -69,6 +70,7 @@ class Order(models.Model):
     customer = models.ForeignKey(Customer, related_name="orders", on_delete=models.CASCADE)
     ordered = models.DateField()
     shipped = models.DateField(blank=True, null=True)
+    email_requested = models.DateTimeField(blank=True, null=True)
     ship_to = models.CharField(max_length=500)
     status = models.CharField(max_length=256,choices=OrderStatus.choices, default=OrderStatus.New)
 

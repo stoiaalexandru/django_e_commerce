@@ -14,7 +14,8 @@ from .mixins import CustomerRequiredMixin
 from .forms import QuantityForm, ProductQuantityForm, ProductListViewForm
 from django.http import Http404
 from .tasks import send_order_email, send_order_history_single_email, send_order_history_all_email
-from django.core import serializers
+from datetime import timedelta
+from .dbsettings import HistoryEmailOptions
 
 
 class ProductList(LoginRequiredMixin, ListView):
@@ -215,8 +216,20 @@ class SendHistorySuccessView(TemplateView):
     fail_url = reverse_lazy('django_shop:history_email_fail')
 
 
-class SendHistoryEmailFailView(TemplateView):
+class SendHistoryEmailFailView(LoginRequiredMixin,CustomerRequiredMixin,TemplateView):
     template_name = 'django_shop/send_history_fail.html'
+    redirect_url = reverse_lazy('django_shop:customer_create')
+    login_url = reverse_lazy('django_users:login')
+
+    def get_context_data(self, **kwargs):
+        context = super(SendHistoryEmailFailView, self).get_context_data()
+        customer = self.request.user.customer
+        mail_options = HistoryEmailOptions()
+        minutes, seconds =\
+            divmod((mail_options.resend_delay_all-(timezone.now()-customer.email_requested)).total_seconds(), 60)
+        context['time_remaining'] = "{}:{}".format(int(minutes),int(seconds))
+
+        return context
 
 
 class SendHistoryAllEmailEndpoint(LoginRequiredMixin, CustomerRequiredMixin, View):
@@ -227,9 +240,16 @@ class SendHistoryAllEmailEndpoint(LoginRequiredMixin, CustomerRequiredMixin, Vie
     mail_template = 'django_shop/order_history_email_all.html'
 
     def get(self, request, *args, **kwargs):
-        ## ToDo: add time validation
-        send_order_history_all_email.delay(self.mail_template, self.request.user.customer.pk)
-        return HttpResponseRedirect(self.success_url)
+        customer = self.request.user.customer
+        email_request_date = self.request.user.customer.email_requested
+        mail_options = HistoryEmailOptions()
+        if email_request_date is None or (email_request_date + mail_options.resend_delay_all < timezone.now()):
+            send_order_history_all_email.delay(self.mail_template, self.request.user.customer.pk)
+            customer.email_requested = timezone.now()
+            customer.save()
+            return HttpResponseRedirect(self.success_url)
+        else:
+            return HttpResponseRedirect(self.fail_url)
 
 
 class SendHistorySingleEmailEndpoint(LoginRequiredMixin, CustomerRequiredMixin, View):
