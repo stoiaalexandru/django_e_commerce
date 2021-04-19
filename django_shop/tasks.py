@@ -36,7 +36,7 @@ def send_order_history_single_email(template, order_pk):
     with open('order_ID{}_{}.csv'.format(order.pk, order.ordered), mode='w') as order_file:
         order_writer = csv.writer(order_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         for item in items:
-            for key in item.keys:
+            for key in item.keys.all():
                 order_writer.writerow([order.id, order.ordered, item.product_name, key.key])
 
     mail_subject = 'History for order {} from {}'.format(order.id, order.ordered)
