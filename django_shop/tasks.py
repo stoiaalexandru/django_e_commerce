@@ -33,19 +33,20 @@ def send_order_history_single_email(template, order_pk):
     order = Order.objects.filter(pk=order_pk).get()
     items = order.history_items.all()
 
-    with open('order_ID{}_{}.csv'.format(order.pk, order.ordered), mode='a+') as order_file:
+    with open('order_ID{}_{}.csv'.format(order.pk, order.ordered), mode='w') as order_file:
         order_writer = csv.writer(order_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         for item in items:
             for key in item.keys.all():
                 order_writer.writerow([order.id, order.ordered, item.product_name, key.key])
-
-        mail_subject = 'History for order {} from {}'.format(order.id, order.ordered)
-        message = render_to_string(template, {
+        order_file.close()
+    mail_subject = 'History for order {} from {}'.format(order.id, order.ordered)
+    message = render_to_string(template, {
         'customer': order.customer,
         'order': order
-        })
+    })
 
-        email = EmailMultiAlternatives(mail_subject, message, "no-reply@e-commerce.ro", to=[order.customer.user.email])
-        email.attach_alternative(message, "text/html")
-        email.attach(order_file.name, order_file.read() , 'text/csv')
+    email = EmailMultiAlternatives(mail_subject, message, "no-reply@e-commerce.ro", to=[order.customer.user.email])
+    email.attach_alternative(message, "text/html")
+    with open('order_ID{}_{}.csv'.format(order.pk, order.ordered), mode='r') as order_send_file:
+        email.attach(order_send_file.name, order_send_file.read(), 'text/csv')
         email.send()
