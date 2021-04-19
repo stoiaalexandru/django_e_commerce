@@ -124,7 +124,14 @@ class OrderHistoryItem(models.Model):
     price = models.FloatField(default=0, validators=([MinValueValidator(0)]))
     quantity = models.IntegerField(default=0, validators=([MinValueValidator(0)]))
 
+    def __str__(self):
+        return "{} {} order: {}".format(self.order.customer.get_full_name(), self.order.ordered,
+                                        self.product_name)
+
 
 class OrderHistoryKey(models.Model):
     order_item = models.ForeignKey(OrderHistoryItem, on_delete=models.CASCADE, related_name='keys')
     key = models.CharField(max_length=64)
+
+    def __str__(self):
+        return "{} {} order: {} key".format(self.order_item.order.customer.get_full_name(),self.order_item.order.ordered,self.order_item.product_name)

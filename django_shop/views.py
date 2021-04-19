@@ -20,6 +20,7 @@ from django.core import serializers
 class ProductList(LoginRequiredMixin, ListView):
     model = Product
     template_name = 'django_shop/product_list.html'
+    login_url = reverse_lazy('django_users:login')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(ProductList, self).get_context_data()
@@ -37,6 +38,8 @@ class ProductDetails(DetailView):
 
 
 class ProductDetailView(LoginRequiredMixin, CustomerRequiredMixin, View):
+    login_url = reverse_lazy('django_users:login')
+    redirect_url = reverse_lazy('django_shop:customer_create')
 
     def get(self, request, *args, **kwargs):
         view = ProductDetails.as_view()
@@ -44,6 +47,9 @@ class ProductDetailView(LoginRequiredMixin, CustomerRequiredMixin, View):
 
 
 class ProductListView(LoginRequiredMixin, CustomerRequiredMixin, View):
+
+    login_url = reverse_lazy('django_users:login')
+    redirect_url = reverse_lazy('django_shop:customer_create')
 
     def get(self, request, *args, **kwargs):
         view = ProductList.as_view()
@@ -82,6 +88,7 @@ class CustomerCreateView(LoginRequiredMixin, CreateView):
     model = Customer
     success_url = reverse_lazy('index')
     fields = ('first_name', 'last_name', 'address', 'phone', 'billing_address')
+    login_url = reverse_lazy('django_users:login')
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -91,8 +98,10 @@ class CustomerCreateView(LoginRequiredMixin, CreateView):
 
 
 class AddToCartView(LoginRequiredMixin, CustomerRequiredMixin, View):
+    redirect_url = reverse_lazy('django_shop:customer_create')
     success_url = reverse_lazy('django_shop:add_success')
     form_class = QuantityForm
+    login_url = reverse_lazy('django_users:login')
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
@@ -102,7 +111,7 @@ class AddToCartView(LoginRequiredMixin, CustomerRequiredMixin, View):
             quantity = form.cleaned_data['quantity']
 
             if not user.customer.cart_exists():
-                ShoppingCart.objects.create(customer=user.customer)
+                ShoppingCart.objects.create(customer=user.customer,created=timezone.now())
 
             cart = user.customer.shopping_cart
             item = cart.items.filter(product_id__exact=product.pk)
@@ -123,6 +132,8 @@ class AddToCartView(LoginRequiredMixin, CustomerRequiredMixin, View):
 
 class CheckoutView(LoginRequiredMixin, CustomerRequiredMixin, TemplateView):
     template_name = 'django_shop/checkout.html'
+    redirect_url = reverse_lazy('django_shop:customer_create')
+    login_url = reverse_lazy('django_users:login')
 
     def get_context_data(self, **kwargs):
         context = super(CheckoutView, self).get_context_data()
@@ -133,15 +144,18 @@ class CheckoutView(LoginRequiredMixin, CustomerRequiredMixin, TemplateView):
 class CheckoutEndpoint(LoginRequiredMixin,CustomerRequiredMixin, View):
     success_url = reverse_lazy('django_shop:order_list')
     fail_url = reverse_lazy('django_shop:checkout_error')
+    redirect_url = reverse_lazy('django_shop:customer_create')
+    login_url = reverse_lazy('django_users:login')
 
     def get(self, request, *args, **kwargs):
         return HttpResponse('<div class="jumbotron"><h1>NOT ALLOWED</h1></div>')
 
     def post(self, request, *args, **kwargs):
         customer = self.request.user.customer
-        items = customer.shopping_cart.items
+        cart = customer.shopping_cart
+        items = cart.items.all()
 
-        for item in items.all():
+        for item in items:
             if item.product.get_stock() < item.quantity:
                 return HttpResponseRedirect(self.fail_url)
 
@@ -149,18 +163,21 @@ class CheckoutEndpoint(LoginRequiredMixin,CustomerRequiredMixin, View):
                                      ordered=timezone.now(),
                                      ship_to=customer.address,
                                      status=OrderStatus.Pending)
-        if not items:
+        if len(items) == 0:
             raise Http404
 
-        items.update(order=order, cart=None)
-        for item in order.items.all():
-            OrderHistoryItem.objects.create(order=order,
+        for item in items:
+            item.order = order
+            item.cart = None
+            item.save()
+
+            history_item = OrderHistoryItem.objects.create(order=order,
                                             product_name=item.product.name,
                                             price=item.product.product_detail.price,
                                             quantity=item.quantity)
             keys = item.product.keys.all()[:item.quantity]
             for key in keys:
-                OrderHistoryKey.objects.create(key=key.key)
+                OrderHistoryKey.objects.create(order_item=history_item, key=key.key)
                # key.delete()
 
         send_order_email.delay(template='django_shop/checkout_email.html',
@@ -174,6 +191,8 @@ class CheckoutEndpoint(LoginRequiredMixin,CustomerRequiredMixin, View):
 class OrderListView(LoginRequiredMixin,CustomerRequiredMixin,ListView):
     model = Order
     template_name = 'django_shop/order_list.html'
+    redirect_url = reverse_lazy('django_shop:customer_create')
+    login_url = reverse_lazy('django_users:login')
 
 
 class AddToCartSuccess(TemplateView):
@@ -182,9 +201,7 @@ class AddToCartSuccess(TemplateView):
 
 class CheckoutError(LoginRequiredMixin, CustomerRequiredMixin, TemplateView):
     template_name = 'django_shop/checkout_error.html'
+    redirect_url = reverse_lazy('django_shop:customer_create')
+    login_url = reverse_lazy('django_users:login')
 
 
-class ReserveView(View):
-    def get(self, request, *args, **kwargs):
-        OrderHistoryKey.objects.all().delete()
-        return HttpResponse("Success")

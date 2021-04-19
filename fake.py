@@ -20,7 +20,7 @@ from django_shop.models import Product, ProductDetail, Key
 fakegen = Faker()
 
 
-def create_entities(N=10):
+def create_entities(N=50):
 
     products = Product.objects.all()
     # creating N entries
@@ -34,6 +34,7 @@ def create_entities(N=10):
             )
             key.save()
         f_price = fakegen.random_int(min=10, max=200)
+        ProductDetail.objects.create(product=product,price=f_price)
 
     # finished
     print("Finished...{} entries populated.".format(N))

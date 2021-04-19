@@ -14,7 +14,6 @@ urlpatterns = [
     path('checkout_error/', views.CheckoutError.as_view(), name='checkout_error'),
     path('complete_checkout/', views.CheckoutEndpoint.as_view(), name='complete_checkout'),
     path('orderlist/', views.OrderListView.as_view(), name='order_list'),
-    path('reserve/', views.ReserveView.as_view(), name='reserve'),
 
 
 ]
