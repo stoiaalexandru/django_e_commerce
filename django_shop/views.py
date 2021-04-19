@@ -13,7 +13,7 @@ from django.utils import timezone
 from .mixins import CustomerRequiredMixin
 from .forms import QuantityForm, ProductQuantityForm, ProductListViewForm
 from django.http import Http404
-from .tasks import send_order_email, send_order_history_single_email
+from .tasks import send_order_email, send_order_history_single_email, send_order_history_all_email
 from django.core import serializers
 
 
@@ -224,9 +224,12 @@ class SendHistoryAllEmailEndpoint(LoginRequiredMixin, CustomerRequiredMixin, Vie
     login_url = reverse_lazy('django_users:login')
     success_url = reverse_lazy('django_shop:history_email_success')
     fail_url = reverse_lazy('django_shop:history_email_fail')
+    mail_template = 'django_shop/order_history_email_all.html'
 
     def get(self, request, *args, **kwargs):
-        pass
+        ## ToDo: add time validation
+        send_order_history_all_email.delay(self.mail_template, self.request.user.customer.pk)
+        return HttpResponseRedirect(self.success_url)
 
 
 class SendHistorySingleEmailEndpoint(LoginRequiredMixin, CustomerRequiredMixin, View):
@@ -237,6 +240,7 @@ class SendHistorySingleEmailEndpoint(LoginRequiredMixin, CustomerRequiredMixin, 
     mail_template = 'django_shop/order_history_email_single.html'
 
     def get(self, request, *args, **kwargs):
+        ## ToDo: add time validation
         pk = kwargs['pk']
         order = Order.objects.filter(pk=pk).get()
         if order:

@@ -8,7 +8,7 @@ import csv
 
 
 @shared_task
-def send_order_email(template, order_pk,):
+def send_order_email(template, order_pk, ):
     try:
         order = Order.objects.filter(pk=order_pk).get()
         user = order.customer.user
@@ -48,4 +48,26 @@ def send_order_history_single_email(template, order_pk):
     email = EmailMultiAlternatives(mail_subject, message, "no-reply@e-commerce.ro", to=[order.customer.user.email])
     email.attach_alternative(message, "text/html")
     email.attach('order_ID{}_{}.csv'.format(order.pk, order.ordered), file_content, 'text/csv')
+    email.send()
+
+
+@shared_task
+def send_order_history_all_email(template, customer_pk):
+    customer = Customer.objects.filter(pk=customer_pk).get()
+
+    file_content = "Order ID,Order Date,Product,Key\n"
+    for order in customer.orders.all():
+        for item in order.history_items.all():
+            for key in item.keys.all():
+                file_content += "{},{},{},{}\n".format(order.id, order.ordered, item.product_name, key.key)
+
+    mail_subject = 'History for all orders'
+    message = render_to_string(template, {
+        'customer': customer,
+        'order_list': customer.orders.all()
+    })
+
+    email = EmailMultiAlternatives(mail_subject, message, "no-reply@e-commerce.ro", to=[customer.user.email])
+    email.attach_alternative(message, "text/html")
+    email.attach('order_history.csv', file_content, 'text/csv')
     email.send()
