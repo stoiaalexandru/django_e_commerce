@@ -13,7 +13,7 @@ def send_order_email(template, order_pk,):
         order = Order.objects.filter(pk=order_pk).get()
         user = order.customer.user
         customer = order.customer
-        
+
         mail_subject = 'Order placed!'
         message = render_to_string(template, {
             'customer': customer,

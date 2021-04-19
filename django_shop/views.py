@@ -181,9 +181,7 @@ class CheckoutEndpoint(LoginRequiredMixin,CustomerRequiredMixin, View):
                # key.delete()
 
         send_order_email.delay(template='django_shop/checkout_email.html',
-                               user_pk=self.request.user.pk,
-                               order_pk=order.pk,
-                               customer_pk=customer.pk)
+                               order_pk=order.pk)
 
         return HttpResponseRedirect(self.success_url)
 
