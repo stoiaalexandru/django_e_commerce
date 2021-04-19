@@ -22,6 +22,6 @@
         <h1>You have no orders yet!</h1>
         <p>You can <a href="{% url 'django_shop:cart' %}"> Checkout Your Cart</a> !</p>
     {% endif %}
-    <a class="btn btn-warning" href="#">Send all order history</a>
+    <a class="btn btn-warning" href="{% url 'django_shop:history_email_all' %}">Send all order history</a>
 
 {% endblock %}

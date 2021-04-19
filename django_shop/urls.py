@@ -17,6 +17,7 @@ urlpatterns = [
     path('history/fail', views.SendHistoryEmailFailView.as_view(), name='history_email_fail'),
     path('history/success', views.SendHistorySuccessView.as_view(), name='history_email_success'),
     path('history/<pk>', views.SendHistorySingleEmailEndpoint.as_view(), name='history_email_single'),
+    path('history/all/', views.SendHistoryAllEmailEndpoint.as_view(), name='history_email_all'),
     path('orderdetail/<pk>', views.OrderDetailView.as_view(), name='order_detail'),
 
 
