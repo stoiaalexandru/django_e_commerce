@@ -37,7 +37,7 @@ def send_order_history_single_email(template, order_pk):
     file_content = "Order ID,Order Date,Product,Key\n"
     for item in items:
         for key in item.keys.all():
-            file_content += "{},{},{}\n".format(order.id, order.ordered, item.product_name, key.key)
+            file_content += "{},{},{},{}\n".format(order.id, order.ordered, item.product_name, key.key)
 
     mail_subject = 'History for order {} from {}'.format(order.id, order.ordered)
     message = render_to_string(template, {
