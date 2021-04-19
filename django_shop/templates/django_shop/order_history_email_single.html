@@ -1,0 +1,32 @@
+{% autoescape off%}
+    Hello , {{ customer }}!
+    Your history for order {{ order.id }} from {{ order.ordered }} was generated!
+    <table class="table">
+
+            <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Price/Item</th>
+                <th scope="col">Total Price</th>
+            </tr>
+
+            {% for item in order.history_items.all %}
+
+                <tr>
+                    <td>{{ item.product_name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.price }}</td>
+                    <td>{{ item.get_total_cost }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td><b>Total:</b></td>
+                <td></td>
+                <td></td>
+                <td><b>{{ order.get_total_cost }}</b></td>
+            </tr>
+        </table>
+
+    A .csv file is attached below with all your keys!
+    Have a great day!
+{% endautoescape %}

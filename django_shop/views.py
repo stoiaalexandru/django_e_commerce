@@ -13,7 +13,7 @@ from django.utils import timezone
 from .mixins import CustomerRequiredMixin
 from .forms import QuantityForm, ProductQuantityForm, ProductListViewForm
 from django.http import Http404
-from .tasks import send_order_email
+from .tasks import send_order_email, send_order_history_single_email
 from django.core import serializers
 
 
@@ -195,6 +195,13 @@ class OrderListView(LoginRequiredMixin,CustomerRequiredMixin,ListView):
     login_url = reverse_lazy('django_users:login')
 
 
+class OrderDetailView(LoginRequiredMixin,CustomerRequiredMixin,DetailView):
+    model = Order
+    template_name = 'django_shop/order_detail.html'
+    redirect_url = reverse_lazy('django_shop:customer_create')
+    login_url = reverse_lazy('django_users:login')
+
+
 class AddToCartSuccess(TemplateView):
     template_name = 'django_shop/add_to_cart_success.html'
 
@@ -205,3 +212,37 @@ class CheckoutError(LoginRequiredMixin, CustomerRequiredMixin, TemplateView):
     login_url = reverse_lazy('django_users:login')
 
 
+class SendHistorySuccessView(TemplateView):
+    template_name = 'django_shop/send_history_success.html'
+    fail_url = reverse_lazy('django_shop:history_email_fail')
+
+
+class SendHistoryEmailFailView(TemplateView):
+    template_name = 'django_shop/send_history_fail.html'
+
+
+class SendHistoryAllEmailEndpoint(LoginRequiredMixin, CustomerRequiredMixin, View):
+    redirect_url = reverse_lazy('django_shop:customer_create')
+    login_url = reverse_lazy('django_users:login')
+    success_url = reverse_lazy('django_shop:history_email_success')
+    fail_url = reverse_lazy('django_shop:history_email_fail')
+
+    def get(self, request, *args, **kwargs):
+        pass
+
+
+class SendHistorySingleEmailEndpoint(LoginRequiredMixin, CustomerRequiredMixin, View):
+    redirect_url = reverse_lazy('django_shop:customer_create')
+    login_url = reverse_lazy('django_users:login')
+    success_url = reverse_lazy('django_shop:history_email_success')
+    fail_url = reverse_lazy('django_shop:history_email_fail')
+    mail_template = 'django_shop/order_history_email_single.html'
+
+    def get(self, request, *args, **kwargs):
+        pk = kwargs['pk']
+        order = Order.objects.filter(pk=pk).get()
+        if order:
+            send_order_history_single_email.delay(self.mail_template, pk)
+            return HttpResponseRedirect(self.success_url)
+        else:
+            return HttpResponseRedirect(self.fail_url)

@@ -128,6 +128,9 @@ class OrderHistoryItem(models.Model):
         return "{} {} order: {}".format(self.order.customer.get_full_name(), self.order.ordered,
                                         self.product_name)
 
+    def get_total_cost(self):
+        return self.quantity*self.price
+
 
 class OrderHistoryKey(models.Model):
     order_item = models.ForeignKey(OrderHistoryItem, on_delete=models.CASCADE, related_name='keys')

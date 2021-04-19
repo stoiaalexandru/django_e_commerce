@@ -14,6 +14,11 @@ urlpatterns = [
     path('checkout_error/', views.CheckoutError.as_view(), name='checkout_error'),
     path('complete_checkout/', views.CheckoutEndpoint.as_view(), name='complete_checkout'),
     path('orderlist/', views.OrderListView.as_view(), name='order_list'),
+    path('history/fail', views.SendHistoryEmailFailView.as_view(), name='history_email_fail'),
+    path('history/success', views.SendHistorySuccessView.as_view(), name='history_email_success'),
+    path('history/<pk>', views.SendHistorySingleEmailEndpoint.as_view(), name='history_email_single'),
+    path('orderdetail/<pk>', views.OrderDetailView.as_view(), name='order_detail'),
+
 
 
 ]
