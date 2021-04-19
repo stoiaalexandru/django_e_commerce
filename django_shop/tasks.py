@@ -39,13 +39,13 @@ def send_order_history_single_email(template, order_pk):
             for key in item.keys.all():
                 order_writer.writerow([order.id, order.ordered, item.product_name, key.key])
 
-    mail_subject = 'History for order {} from {}'.format(order.id, order.ordered)
-    message = render_to_string(template, {
+        mail_subject = 'History for order {} from {}'.format(order.id, order.ordered)
+        message = render_to_string(template, {
         'customer': order.customer,
         'order': order
-    })
+        })
 
-    email = EmailMultiAlternatives(mail_subject, message, "no-reply@e-commerce.ro", to=[order.customer.user.email])
-    email.attach_alternative(message, "text/html")
-    email.attach(order_file.name, order_file.read(), 'text/csv')
-    email.send()
+        email = EmailMultiAlternatives(mail_subject, message, "no-reply@e-commerce.ro", to=[order.customer.user.email])
+        email.attach_alternative(message, "text/html")
+        email.attach(order_file.name, order_file.read(), 'text/csv')
+        email.send()
