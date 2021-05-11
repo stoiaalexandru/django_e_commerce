@@ -2,7 +2,7 @@
 import sys
 import os
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_e_commerce.settings')
+#os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
 # Setting up django configurations
 import django

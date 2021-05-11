@@ -1,6 +1,5 @@
-from django.urls import path, include, reverse_lazy
+from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth import views as auth_views
 from .views import (SignUpView, GoodByeView, PasswordResetView, PasswordResetDoneView,
                     PasswordResetConfirmView,PasswordResetCompleteView, ActivateAccountView,RegisterSuccessView,
                     ResendActivationEmailView,ResendActivationEmailSuccess,)

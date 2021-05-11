@@ -1,4 +1,3 @@
-from django.views import View
 from django.views.generic import CreateView, TemplateView, UpdateView, FormView
 from django.urls import reverse_lazy
 from .models import CustomUser, ActivationEmailOptions
@@ -14,8 +13,7 @@ from django.utils.http import urlsafe_base64_decode
 from .tokens import account_activation_token
 from django.utils import timezone
 from .tasks import send_activation_email
-from django_shop.models import Customer, ShoppingCart
-from django.core import serializers
+
 
 class SignUpView(CreateView):
     form_class = forms.SignupForm

@@ -2,8 +2,7 @@ from django.db import models
 from django_users.models import CustomUser
 from django.core.validators import MinValueValidator
 from django.utils import timezone
-from django.db.migrations.operations import RunSQL
-# Create your models here.
+
 
 
 class OrderStatus(models.TextChoices):

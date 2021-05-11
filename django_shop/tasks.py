@@ -1,10 +1,9 @@
 from celery import shared_task
-from django.core.mail import EmailMessage, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 from django_shop.models import Customer, Order
-from django_users.models import CustomUser
-import csv
+
 
 
 @shared_task

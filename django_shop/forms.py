@@ -1,13 +1,12 @@
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.views.generic import FormView
 from django.views.generic.detail import SingleObjectMixin
 
 from .mixins import CustomerRequiredMixin
-from .models import Customer, ShoppingCart, LineItem, Product
-from django.db.models import F
+from .models import Product
+
 
 
 class QuantityForm(forms.Form):
