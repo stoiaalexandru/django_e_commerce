@@ -1,0 +1,12 @@
+{% extends 'django_shop/base.html' %}
+{% block title %}
+    Email sent
+{% endblock %}
+{% block content %}
+    <h1>HOORAAAY! Your order history will be emailed to you soon!</h1>
+    <h2>You can go to
+        <a href="{% url 'index' %}">HOMEPAGE</a>
+        or
+        <a href="{% url 'django_shop:order_list' %}">Your orders</a>
+    </h2>
+{% endblock %}

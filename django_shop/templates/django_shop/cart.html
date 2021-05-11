@@ -6,7 +6,7 @@
 {% block content %}
     <h1> Welcome {{ customer.get_full_name }}</h1>
     <h2> This is your current shopping cart:</h2>
-    {% if product_lineitem_list %}
+    {% if customer.shopping_cart.items.all %}
         <table class="table">
 
             <tr>
@@ -16,7 +16,7 @@
                 <th scope="col">Total Price</th>
             </tr>
 
-            {% for product in product_lineitem_list %}
+            {% for product in customer.shopping_cart.items.all %}
 
                 <tr>
                     <td>{{ product.product.name }}</td>
@@ -26,14 +26,23 @@
                 </tr>
             {% endfor %}
             <tr>
-                <td>Total:</td>
+                <td><b>Total:</b></td>
                 <td></td>
                 <td></td>
-                <td><b>{{ total_price }}</b></td>
+                <td><b>{{ customer.shopping_cart.get_total_cost }}</b></td>
             </tr>
-
         </table>
-        <a class="btn btn-success" href="#">Checkout</a>
+        <p>Date created: {{ customer.shopping_cart.created }}</p>
+        {% if checkout_available %}
+            <a class="btn btn-success" href="{% url 'django_shop:checkout'%}">Checkout</a>
+        {% else %}
+            <a class="btn btn-success disabled">Checkout</a>
+        {% endif %}
+        <div class="jumbotron">
+            {% block checkout %}
+            {% endblock %}
+        </div>
+
     {% else %}
         <p>No products added to cart yet, you can browse <a href="{% url 'django_shop:product_list' %}">our product
             list</a>!</p>

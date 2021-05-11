@@ -1,0 +1,27 @@
+{% extends 'django_shop/base.html' %}
+{% block title %}
+    Orders
+{% endblock %}
+{% block content %}
+    {% if order_list %}
+        <h1>Your orders:</h1>
+        <table class="table">
+            <tr>
+                <th scope="col">Order</th>
+                <th scope="col">Total Price</th>
+            </tr>
+            {% for order in order_list %}
+                <tr>
+                    <td><a href="{% url 'django_shop:order_detail' pk=order.id %}">{{ order.ordered }}</a></td>
+                    <td>{{ order.get_total_cost }}</td>
+
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <h1>You have no orders yet!</h1>
+        <p>You can <a href="{% url 'django_shop:cart' %}"> Checkout Your Cart</a> !</p>
+    {% endif %}
+    <a class="btn btn-warning" href="{% url 'django_shop:history_email_all' %}">Send all order history</a>
+
+{% endblock %}

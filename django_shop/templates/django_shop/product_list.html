@@ -1,14 +1,26 @@
 {% extends 'base.html' %}
+{% load bootstrap3 %}
 {% block title %}
     Product list
 {% endblock %}
 
 {% block content %}
     <ul>
-    {% for product in product_list %}
-    <li><a href="{% url 'django_shop:product_detail' pk=product.pk  %}">{{ product.name }}</a></li>
-    {% empty %}
-    <li>No products available.</li>
-    {% endfor %}
-       </ul>
+        {% for product in product_list %}
+            <li>
+                <div>
+                    <a href="{% url 'django_shop:product_detail' pk=product.pk %}">{{ product.name }}</a>
+                    <form method="post" action="{% url 'django_shop:add_to_cart' pk=product.pk %}">
+                        {% csrf_token %}
+
+                        {% bootstrap_form form %}
+
+                        <input type="submit" class="btn btn-success" value="Add to cart">
+                    </form>
+                </div>
+            </li>
+        {% empty %}
+            <li>No products available.</li>
+        {% endfor %}
+    </ul>
 {% endblock %}

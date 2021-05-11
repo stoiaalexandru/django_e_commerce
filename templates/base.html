@@ -30,6 +30,8 @@
         {% if user.is_authenticated %}
             <li><a class="nav-btn" href="{% url 'django_shop:cart' %}">Cart</a></li>
             <li><a class="nav-btn" href="{% url 'django_shop:product_list' %}">Products</a></li>
+            <li><a class="nav-btn" href="{% url 'django_shop:order_list' %}">Orders</a></li>
+
 
         {% endif %}
 

@@ -1,7 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
 from django.utils import timezone
-
 from .models import CustomUser, ActivationEmailOptions
 
 
@@ -44,4 +43,3 @@ class ResendActivationEmailForm(forms.Form):
 
         self.cleaned_data['user'] = user
         return email
-

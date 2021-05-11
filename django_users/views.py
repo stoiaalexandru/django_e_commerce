@@ -9,14 +9,13 @@ from django.contrib.auth.views import PasswordResetConfirmView as DjangoPassword
 from django.contrib.auth.views import PasswordResetCompleteView as DjangoPasswordResetCompleteView
 ######
 from django.contrib.sites.shortcuts import get_current_site
-from django.utils.encoding import force_bytes, force_text
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.template.loader import render_to_string
-from django.core.mail import EmailMessage
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode
 from .tokens import account_activation_token
 from django.utils import timezone
 from .tasks import send_activation_email
-
+from django_shop.models import Customer, ShoppingCart
+from django.core import serializers
 
 class SignUpView(CreateView):
     form_class = forms.SignupForm
@@ -28,6 +27,8 @@ class SignUpView(CreateView):
         self.object.is_active = False
         self.object.activation_mail_date = timezone.now()
         self.object.save()
+
+
 
         current_site = get_current_site(self.request)
         send_activation_email.delay(template='django_users/account_activate_email.html',
@@ -108,3 +109,5 @@ class PasswordResetConfirmView(DjangoPasswordResetConfirmView):
 
 class PasswordResetCompleteView(DjangoPasswordResetCompleteView):
     template_name = 'django_users/registration/password_reset_complete.html'
+
+
